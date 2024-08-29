@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Name}} - CV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        p {
+            margin: 5px 0;
+        }
+        ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{.Name}}</h1>
+    <h2>{{.Position}}</h2>
+    <p>{{.Summary}}</p>
+
+    <h3>Skills</h3>
+    <ul>
+        {{range .Skills}}
+        <li>{{.}}</li>
+        {{end}}
+    </ul>
+
+    <h3>Experience</h3>
+    {{range .Experience}}
+    <h4>{{.Role}} - {{.Company}} ({{.Duration}})</h4>
+    <ul>
+        {{range .Details}}
+        <li>{{.}}</li>
+        {{end}}
+    </ul>
+    {{end}}
+
+    <h3>Education</h3>
+    {{range .Education}}
+    <h4>{{.Degree}} - {{.Institution}} ({{.Year}})</h4>
+    {{end}}
+</body>
+</html>
