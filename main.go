@@ -1,88 +1,66 @@
 package main
 
 import (
-    "html/template"
-    "net/http"
+	"crypto/rand"
+	"html/template"
+	"log"
+	"net/http"
+	"strings"
 )
 
-type CV struct {
-    Name      string
-    Position  string
-    Summary   string
-    Skills    []string
-    Experience []Experience
-    Education []Education
+type PasswordData struct {
+	Password string
 }
 
-type Experience struct {
-    Company  string
-    Role     string
-    Duration string
-    Details  []string
+// GenerateRandomPassword generates a random password based on the ISO 27001 recommendation
+func GenerateRandomPassword(length int) (string, error) {
+	const charset = "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"0123456789" +
+		"!@#$%^&*()_-+={}[]<>?"
+
+	var password strings.Builder
+	buffer := make([]byte, length)
+	if _, err := rand.Read(buffer); err != nil {
+		return "", err
+	}
+
+	for _, b := range buffer {
+		password.WriteByte(charset[b%byte(len(charset))])
+	}
+
+	return password.String(), nil
 }
 
-type Education struct {
-    Institution string
-    Degree      string
-    Year        string
-}
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/index.html")
+	if err != nil {
+		http.Error(w, "Error loading template", http.StatusInternalServerError)
+		return
+	}
 
-func cvHandler(w http.ResponseWriter, r *http.Request) {
-    // Data untuk CV
-    cv := CV{
-        Name:     "Malik Alamsyah",
-        Position: "Software Engineer",
-        Summary:  "An experienced software engineer with a strong background in Golang and web development.",
-        Skills: []string{
-            "Golang",
-            "Docker",
-            "Linux",
-            "REST API",
-        },
-        Experience: []Experience{
-            {
-                Company:  "Tech Solutions Ltd.",
-                Role:     "Backend Developer",
-                Duration: "2019 - Present",
-                Details: []string{
-                    "Developed microservices using Golang.",
-                    "Integrated RESTful APIs with frontend applications.",
-                    "Worked on performance optimization and scalability.",
-                },
-            },
-            {
-                Company:  "Web Innovators Inc.",
-                Role:     "Junior Developer",
-                Duration: "2017 - 2019",
-                Details: []string{
-                    "Assisted in the development of web applications using PHP and JavaScript.",
-                    "Maintained and updated existing web projects.",
-                    "Collaborated with senior developers on various tasks.",
-                },
-            },
-        },
-        Education: []Education{
-            {
-                Institution: "ABC University",
-                Degree:      "Bachelor of Computer Science",
-                Year:        "2013 - 2017",
-            },
-            {
-                Institution: "XYZ Vocational High School",
-                Degree:      "Diploma in Software Engineering",
-                Year:        "2010 - 2013",
-            },
-        },
-    }
-
-    // Parsing template
-    tmpl := template.Must(template.ParseFiles("cv.html"))
-
-    // Rendering template dengan data CV
-    tmpl.Execute(w, cv)
+	if r.Method == http.MethodPost {
+		password, err := GenerateRandomPassword(16) // Panjang password bisa disesuaikan
+		if err != nil {
+			http.Error(w, "Error generating password", http.StatusInternalServerError)
+			return
+		}
+		tmpl.Execute(w, PasswordData{Password: password})
+	} else {
+		tmpl.Execute(w, nil)
+	}
 }
 
 func main() {
-    http.HandleFunc("/", cvHandler)
-    http.ListenAndServe(":8080", nil)
+	http.HandleFunc("/", indexHandler)
+
+	// Menyajikan file statis seperti CSS
+	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("templates"))))
+
+	// Jalankan server di port 8080
+	log.Println("Server started at http://localhost:8080")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
