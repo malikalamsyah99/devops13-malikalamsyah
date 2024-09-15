@@ -2,22 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Password Generator</title>
-    <link rel="stylesheet" href="/templates/styles.css">
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Random Password Generator (ISO 27001)</h1>
-        <form action="/" method="POST">
+        <h1>Password Generator</h1>
+
+        {{ if .Password }}
+            <div class="password-wrapper">
+                <p>Generated Password:</p>
+                <p><strong>{{ .Password }}</strong></p>
+            </div>
+        {{ end }}
+
+        <form method="POST">
             <button type="submit">Generate Password</button>
         </form>
-
-        {{if .Password}}
-        <h2>Your Generated Password:</h2>
-        <div class="password-box">{{.Password}}</div>
-        {{end}}
     </div>
 </body>
 </html>
