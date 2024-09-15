@@ -2,11 +2,15 @@ package main
 
 import (
 	"crypto/rand"
+	"embed"
 	"html/template"
 	"log"
 	"net/http"
 	"strings"
 )
+
+//go:embed templates/*.html static/*
+var content embed.FS
 
 type PasswordData struct {
 	Password string
@@ -33,7 +37,7 @@ func GenerateRandomPassword(length int) (string, error) {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/index.html")
+	tmpl, err := template.ParseFS(content, "templates/index.html")
 	if err != nil {
 		http.Error(w, "Error loading template", http.StatusInternalServerError)
 		return
@@ -54,12 +58,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/", indexHandler)
 
-	// Menyajikan file statis seperti CSS
-	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("templates"))))
+	// Menyajikan file statis (misalnya CSS) dari embed
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(content))))
 
-	// Jalankan server di port 8080
-	log.Println("Server started at http://localhost:8080")
-	err := http.ListenAndServe(":8080", nil)
+	// Jalankan server di port 8011
+	log.Println("Server started at http://0.0.0.0:8011")
+	err := http.ListenAndServe("0.0.0.0:8011", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
