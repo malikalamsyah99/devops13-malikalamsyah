@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build Go App
-    runs-on: ['self-hosted', 'Linux', 'X64', 'builder']
+    runs-on: ['self-hosted', 'Linux', 'X64', 'builder-app']
 
     steps:
     - name: Checkout code
