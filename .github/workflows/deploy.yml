@@ -26,7 +26,7 @@ jobs:
 
     - name: Download styles.css to static directory
       run: |
-        aws s3 cp s3://cloudhub-devops13/apps/${{ github.event.inputs.version }}/styles.css /opt/passwd-gen/static/styles.css
+        aws s3 cp s3://cloudhub-devops13/apps/${{ github.event.inputs.version }}/static/styles.css /opt/passwd-gen/static/styles.css
 
     - name: Download password-generator binary
       run: |
