@@ -1,0 +1,34 @@
+name: Deploy Password Generator App
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy'
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy Go App to Server
+    runs-on: ['self-hosted', 'Linux', 'X64', 'app-server']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Download Artifact from AWS S3
+      run: |
+        aws s3 cp s3://cloudhub-devops13/apps/${{ github.event.inputs.version }}/ /opt/passwd-gen/ --recursive --overwrite
+
+    - name: Stop Password Generator Service
+      run: sudo systemctl stop password-generator.service
+
+    - name: Install/Replace Files
+      run: |
+        sudo cp -r /opt/passwd-gen/* /opt/passwd-gen/
+
+    - name: Start Password Generator Service
+      run: sudo systemctl start password-generator.service
+
+    - name: Verify Password Generator Service Status
+      run: sudo systemctl status password-generator.service
