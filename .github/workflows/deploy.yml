@@ -18,7 +18,7 @@ jobs:
 
     - name: Download Artifact from AWS S3
       run: |
-        aws s3 cp s3://cloudhub-devops13/apps/${{ github.event.inputs.version }}/ /opt/passwd-gen/ --recursive --overwrite
+        aws s3 cp s3://cloudhub-devops13/apps/${{ github.event.inputs.version }}/ /opt/passwd-gen/ --recursive
 
     - name: Stop Password Generator Service
       run: sudo systemctl stop password-generator.service
