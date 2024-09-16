@@ -22,7 +22,7 @@ jobs:
 
     - name: Download index.html to template directory
       run: |
-        aws s3 cp s3://cloudhub-devops13/apps/${{ github.event.inputs.version }}/index.html /opt/passwd-gen/template/index.html
+        aws s3 cp s3://cloudhub-devops13/apps/${{ github.event.inputs.version }}/index.html /opt/passwd-gen/templates/index.html
 
     - name: Download styles.css to static directory
       run: |
