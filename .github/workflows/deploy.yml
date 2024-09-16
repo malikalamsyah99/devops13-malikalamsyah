@@ -16,16 +16,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Download Artifact from AWS S3
-      run: |
-        aws s3 cp s3://cloudhub-devops13/apps/${{ github.event.inputs.version }}/ /opt/passwd-gen/ --recursive
-
     - name: Stop Password Generator Service
       run: sudo systemctl stop password-generator.service
 
-    - name: Install/Replace Files
+    - name: Download and Replace Files from AWS S3
       run: |
-        sudo cp -r /opt/passwd-gen/* /opt/passwd-gen/
+        sudo aws s3 cp s3://cloudhub-devops13/apps/${{ github.event.inputs.version }}/ /opt/passwd-gen/ --recursive
 
     - name: Start Password Generator Service
       run: sudo systemctl start password-generator.service
