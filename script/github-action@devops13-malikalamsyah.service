@@ -1,0 +1,11 @@
+Unit]
+Description=Github Action Self Hosted
+
+[Service]
+Type=simple
+User=malik
+WorkingDirectory=/opt/github-action/%i
+ExecStart=/bin/bash /opt/github-action/%i/run.sh
+
+[Install]
+WantedBy=multi-user.target
